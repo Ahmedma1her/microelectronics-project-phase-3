@@ -18,8 +18,23 @@ dbConnection();
 
 // Require Routes
 const authRoutes = require("./routes/authRoutes");
+const productRoutes=require("./routes/productRoute")
 
 app.use("/api", authRoutes);
+app.use("/api",productRoutes)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.listen(port, () => {
   console.log(`Server running at port ${port}`);

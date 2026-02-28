@@ -1,7 +1,7 @@
 const User = require("../models/User");
 
 const bcrypt = require("bcrypt");
-
+const JWT=require ("jsonwebtoken")
 const register = async (req, res) => {
   try {
     // Get Data
@@ -50,7 +50,14 @@ const login = async (req, res) => {
     if (!matchPassword)
       return res.status(400).json({ msg: "Invalid Password" });
 
-    const authCode = Buffer.from(user._id.toString()).toString("base64");
+    //const authCode = Buffer.from(user._id.toString()).toString("base64");
+    const token= JWT.sign ({
+      id:user_id,
+      role:user.role,
+    },process.env.JWT_SECRET,{
+        expiresIn:"1d"
+    }
+  )
 
     res.status(200).json({
       msg: "Success Login",
