@@ -38,28 +38,30 @@ res.status(200).json({
 
 
 
-const 
-getAllProducts= async(req,res)=>{
-    try {
-        
-    } catch (error) {
-        
-    }
-}
+const getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find();
+    res.status(200).json({
+      success: true,
+      data: products
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: "Server error" });
+  }
+};
 
+const searchProducts = async (req, res) => {
+  try {
+    const { name } = req.query;
+    if (!name) return res.status(400).json({ msg: "Provide a search query" });
 
+    const products = await Product.find({ name: { $regex: name, $options: "i" } });
 
-
-
-
-const 
-searchProducts= async(req,res)=>{
-    try {
-        
-    } catch (error) {
-        
-    }
-}
+    res.status(200).json({ success: true, data: products });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: "Server error" });
+  }
+};
 
 
 module.exports={
