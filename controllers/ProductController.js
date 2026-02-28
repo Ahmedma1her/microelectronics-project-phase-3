@@ -14,7 +14,7 @@ const addProduct= async(req,res)=>{
 const checkAdmin=await User.findById(userId)
 if (!checkAdmin)return res.status(404).json({msg:"user not found"})
  //check role
-if(checkAdmin.role!==admin)return res.json({msg: "access denied"})
+if(checkAdmin.role!=="admin")return res.json({msg: "access denied"})
     
     //create new product
 

@@ -52,7 +52,7 @@ const login = async (req, res) => {
 
     //const authCode = Buffer.from(user._id.toString()).toString("base64");
     const token= JWT.sign ({
-      id:user_id,
+      id:user._id,
       role:user.role,
     },process.env.JWT_SECRET,{
         expiresIn:"1d"
@@ -61,7 +61,7 @@ const login = async (req, res) => {
 
     res.status(200).json({
       msg: "Success Login",
-      data: authCode,
+      data: token,
     });
   } catch (error) {
     console.log(error);
