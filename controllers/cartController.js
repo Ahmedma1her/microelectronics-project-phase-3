@@ -1,15 +1,18 @@
 const Cart = require("../models/cart");
 const Product = require("../models/Product");
-
+const JWT=require ("jsonwebtoken")
+const User =require("../models/User");
+const e = require("express");
+const { get } = require("mongoose");
 
 const addToCart = async (req, res) => {
   try {
-    const { userId, productId, quantity } = req.body;
+    const { productId, quantity } = req.body;
 
     // 1️ Validate input
-    if (!userId || !productId || !quantity)
+    if ( !productId || !quantity)
       return res.status(400).json({ msg: "Missing data" });
-
+      const userId=req.user.id
 
 
     // 2️ Get product and check stock
@@ -19,34 +22,38 @@ const addToCart = async (req, res) => {
       return res.status(400).json({ msg: "Quantity exceeds stock" });
 
     // 3️ Check if user already has a cart
-    let cart = await Cart.findOne({ user: userId });
+    let cart = await Cart.findOne({ userId });
 
     if (!cart) {
       // Create new cart
-      cart = new Cart({
+      cart =await new Cart.create({
         user: userId,
         products: [{ product: productId, quantity }],
       });
+
     } else {
       // Check if product already exists in cart
       const itemIndex = cart.products.findIndex(
-        (p) => p.product.toString() === productId
+        item.product.equals(productId)
       );
 
       if (itemIndex > -1) {
         // Update quantity
-        const newQuantity = cart.products[itemIndex].quantity + quantity;
-        if (newQuantity > product.stock)
+        const newQuantity = cart.products[itemIndex].quantity += quantity;
+        if (newQuantity > product.stock){
           return res.status(400).json({ msg: "Quantity exceeds stock" });
 
-        cart.products[itemIndex].quantity = newQuantity;
+}
+
       } else {
         // Add new product to cart
-        cart.products.push({ product: productId, quantity });
+        cart.products.push({ product: productId, quantity:quantity });
       }
     }
 
     await cart.save();
+    product.stock-=quantity
+    await product.save()
 
     // 4️ Calculate totalPrice dynamically
     let totalPrice = 0;
@@ -71,4 +78,21 @@ const addToCart = async (req, res) => {
   }
 };
 
-module.exports = { addToCart };
+
+const getCart= async (req,res) => {
+  try {
+   userid=req.user.id
+   
+    const cart=await Cart.findOne({user:userid}).populate("products.product")
+res.json({
+  data:cart
+})
+    
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+
+module.exports = { addToCart,getCart };
